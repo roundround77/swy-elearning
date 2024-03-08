@@ -1,0 +1,190 @@
+{% extends 'registration/registration_base.html' %}
+{% block title %}Dj Learning Management System - Login{% endblock title %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<style>
+  .form-check{
+    margin: 1.5rem 0rem;
+  }
+  .signup{
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+</style>
+<div class="col-md-4 mx-auto mt-5">
+  <div class="card">
+    <div  class="form-title">
+      <i class="fas fa-lock me-2"></i>
+      <div id="form-title">Sign in</div>
+    </div>
+    <div class="card-body">
+      {% if messages %}
+      {% for message in messages %}
+      {% if message.tags == 'error' %}
+      <div class="alert alert-danger">
+        <i class="fas fa-exclamation-circle"></i>{{ message }}
+      </div>
+      {% else %}
+      <div class="alert alert-success">
+        <i class="fas fa-check-circle"></i>{{ message }}
+      </div>
+      {% endif %}
+      {% endfor %}
+      {% endif %}
+      <!-- Login Form -->
+      <div id="login-form-container">
+        <form action="" method="POST" id="login-form">
+          {% csrf_token %}
+          
+          <div class="form-group mb-3">
+            <label class="mb-2" for="username_id"
+              ><i class="fas fa-address-card me-2"></i>Email</label
+            >
+            <input
+              type="text"
+              name="email"
+              id="username_id" 
+              class="form-control"
+              required
+            />
+            <div id="message-wrapper"></div>
+          </div>
+          <div class="form-group mb-3">
+            <label class="mb-2" for="password_id"
+              ><i class="fas fa-key me-2"></i>Password</label
+            >
+            <input
+              type="password"
+              name="password"
+              id="password_id"
+              class="form-control"
+              required
+            />
+          </div>
+  
+          <div class="btn-group signup" style="margin-right: 10px;">
+            <button type="submit" class="btn btn-secondary" id="login-btn">
+              <i class="fas fa-sign-in-alt"></i> <small>SIGN IN</small>
+            </button>
+          </div>
+  
+        </form>
+        <div class="text-center">
+          <p id="toggle-link">Don't have an account? <a href="#">Create an account</a>.</p>
+        </div>
+        <br />
+        <div class="login-bottom">
+          <a href="{% url 'password_reset' %}" class="link">Forgot password ?</a>
+        </div>
+      </div>
+
+      <div id="create-account-form-container" >
+        <form action="" method="POST" id="create-account-form">
+          {% csrf_token %}
+          <div class="form-check">
+            <input type="radio" id="lecturer" name="userType" value="lecturer" class="form-check-input" required />
+            <label for="lecturer" class="form-check-label">Sign up as a Lecturer</label>
+          </div>
+      
+          <div class="form-check">
+            <input type="radio" id="student" name="userType" value="student" class="form-check-input" required />
+            <label for="student" class="form-check-label">Sign up as a Student</label>
+          </div>
+          <div class="btn-group" style="margin-top: 10px">
+            <button type="button" class="btn btn-secondary" id="next-btn" onclick="handleNext()">
+              Next &rarr;
+            </button>
+          </div>
+
+        </form>
+      </div>
+      <div id="lecturer-content" style="display: none;">
+        Lecturer Content
+      </div>
+      
+      <div id="student-content" style="display: none;">
+
+        Student Content
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block js %}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+  $(document).ready(function () {
+    // Hide Create Account form initially
+    console.log("jQuery is running")
+    $("#create-account-form-container").hide();
+
+    // Toggle between login and create account forms
+    $("#toggle-link a").click(function (e) {
+      e.preventDefault();
+      $("#login-form-container").toggle();
+      $("#create-account-form-container").toggle();
+
+      // Toggle the form title
+      var currentTitle = $("#form-title").text().trim();
+      var newTitle = currentTitle === "Sign In" ? "Sign Up" : "Sign Up ";
+      $("#form-title").text(newTitle);
+    });
+    
+  });
+</script>
+<script>
+  function handleNext() {
+  
+    const userType = $("input[name='userType']:checked").val();
+
+    if (userType === 'lecturer') {
+
+      window.location.href = '/accounts/register_lecturer/';
+    } else if (userType === 'student') {
+    
+      window.location.href = '/accounts/register_student/';
+    } else {
+   
+      alert('Invalid selection');
+    }
+  }
+   $('#register-form').submit(function (e) {
+    // e.preventDefault();
+    $('#register-btn').addClass('disabled')
+    $('#register-btn').html(`<i class="fas fa-sign-in-alt"></i> Saving details . . .`)
+  })
+
+  $('#login-form').submit(function (e) {
+    // e.preventDefault();
+    $('#login-btn').addClass('disabled')
+    $('#login-btn').html(`<i class="fas fa-sign-in-alt"></i> Signining you in . . .`)
+  })
+
+  $("#username").on("input", function () {
+    username = $(this).val();
+
+    $.ajax({
+      url: "/accounts/ajax/validate-username/",
+      data: {
+        username: username
+      },
+      dataType: 'json',
+      success: function (data) {
+        if (data.is_taken) {
+          console.log(data.is_taken);
+          $('#message-wrapper').html(`<p class="my-2 text-danger"><span class="bg-error p-2"><b>${username}</b> already taken :( try another one </span></p>`)
+        }
+        else {
+          $('#message-wrapper').html(`<p class="my-2 text-success"><span class="bg-correct p-2"><b>${username}</b> is valid </span></p>`)
+        }
+      }
+
+    })
+  })
+</script>
+{% endblock %}
