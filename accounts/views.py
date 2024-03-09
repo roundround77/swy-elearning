@@ -34,6 +34,8 @@ def sign_in(request):
             login(request,user)
             messages.success(request,f'Welcome {request.user.username}')
             return redirect('/')
+        messages.error(request,'Kindly put in the same credentials you used to register')
+        return redirect('/')
     return render(request,'registration/login.html')
 
  
@@ -47,7 +49,7 @@ def lecturer_register(request):
             return redirect('/')
         else:
             messages.error(
-                request, f"Error,kindly fill all fields correctly and make sure all passwords are 8-digit character long"
+                request, f"Error,kindly fill all fields correctly and make sure all passwords are more than 8-digit character long"
             )
             return redirect('register_lecturer')
     else:

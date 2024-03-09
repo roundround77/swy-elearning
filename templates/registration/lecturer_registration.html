@@ -10,11 +10,16 @@
       Lecturer Registration
     </div>
     <div class="card-body">
-        {% if form.error %}
-            <div class="alert alert-danger">
-              <i class="fas fa-exclamation-circle"></i>{{form.error}}
-            </div>
+        {% if messages %}
+              {% for message in messages %}
+                  {% if message.tags == 'error' %}
+                      <div class="alert alert-danger">
+                          <i class="fas fa-exclamation-circle"></i>{{ message }}
+                      </div>
+                  {% endif %}
+              {% endfor %}
         {% endif %}
+
         <form action="" method="POST" id="register-form">{% csrf_token %}
           <div class="form-group mb-3">
               <label class="mb-2" for="first_name_id"><i class="fa-solid fa-address-card me-2"></i>{{ form.first_name.label }}</label>

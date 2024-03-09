@@ -1,5 +1,5 @@
 pytz==2022.7  # https://github.com/stub42/pytz
-Pillow==10.2.0  # https://github.com/python-pillow/Pillow
+pillow==10.2.0  # https://github.com/python-pillow/Pillow
 whitenoise==6.2.0  # https://github.com/evansd/whitenoise
 
 # Django

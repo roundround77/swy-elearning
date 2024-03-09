@@ -42,7 +42,7 @@ class ProgramFilterView(FilterView):
 #####################################################################################################
 @login_required(login_url='login')
 @lecturer_required
-def program_add(request):
+def add_program(request):
     if request.method == "POST":
         form = ProgramForm(request.POST)
         if form.is_valid():
@@ -67,7 +67,7 @@ def program_add(request):
 
 
 @login_required(login_url='login')
-def program_detail(request, pk):
+def detail_program(request, pk):
     program = Program.objects.get(pk=pk)
     courses = Course.objects.filter(program_id=pk).order_by("-year")
     credits = Course.objects.aggregate(Sum("credit"))
@@ -92,7 +92,7 @@ def program_detail(request, pk):
 
 @login_required(login_url='login')
 @lecturer_required
-def program_edit(request, pk):
+def edit_program(request, pk):
     program = Program.objects.get(pk=pk)
 
     if request.method == "POST":
@@ -115,7 +115,7 @@ def program_edit(request, pk):
 
 @login_required(login_url='login')
 @lecturer_required
-def program_delete(request, pk):
+def delete_program(request, pk):
     program = Program.objects.get(pk=pk)
     title = program.title
     program.delete()
@@ -132,7 +132,7 @@ def program_delete(request, pk):
 # Lecturer and admins can create program courses
 # ########################################################
 @login_required(login_url='login')
-def course_single(request, slug):
+def single_course(request, slug):
     course = Course.objects.get(slug=slug)
     files = Upload.objects.filter(course__slug=slug)
     videos = UploadVideo.objects.filter(course__slug=slug)
@@ -161,7 +161,7 @@ def course_single(request, slug):
 
 @login_required(login_url='login')
 @lecturer_required
-def course_add(request, pk):
+def add_course(request, pk):
     users = User.objects.all()
     if request.method == "POST":
         form = CourseAddForm(request.POST)
@@ -279,7 +279,7 @@ def delete_feedbacks(request,id):
 #####################################################################################################
 @login_required(login_url='login')
 @lecturer_required
-def course_edit(request, slug):
+def edit_course(request, slug):
     course = get_object_or_404(Course, slug=slug)
     if request.method == "POST":
         form = CourseAddForm(request.POST, instance=course)
@@ -309,7 +309,7 @@ def course_edit(request, slug):
 
 @login_required(login_url='login')
 @lecturer_required
-def course_delete(request, slug):
+def delete_course(request, slug):
     course = Course.objects.get(slug=slug)
     # course_name = course.title
     course.delete()
@@ -325,7 +325,7 @@ def course_delete(request, slug):
 # Lecturers who create a specific course gets the course allocated to them and admin can also allocate course to othe lecturers
 # ########################################################
 @method_decorator([login_required(login_url='login')], name="dispatch")
-class CourseAllocationFormView(CreateView):
+class add_lecturer_to_CourseAllocationFormView(CreateView):
     form_class = CourseAllocationForm
     template_name = "course/course_allocation_form.html"
 
@@ -432,7 +432,7 @@ def handle_file_upload(request, slug):
 
 @login_required(login_url='login')
 @lecturer_required
-def handle_file_edit(request, slug, file_id):
+def handle_edit_file(request, slug, file_id):
     course = Course.objects.get(slug=slug)
     instance = Upload.objects.get(pk=file_id)
     if request.method == "POST":
@@ -454,7 +454,7 @@ def handle_file_edit(request, slug, file_id):
     )
 
 
-def handle_file_delete(request, slug, file_id):
+def handle_delete_file(request, slug, file_id):
     file = Upload.objects.get(pk=file_id)
     # file_name = file.name
     file.delete()
@@ -468,7 +468,7 @@ def handle_file_delete(request, slug, file_id):
 # ########################################################
 @login_required(login_url='login')
 @lecturer_required
-def handle_video_upload(request, slug):
+def handle_upload_video(request, slug):
     course = Course.objects.get(slug=slug)
     if request.method == "POST":
         form = UploadFormVideo(request.POST, request.FILES)
@@ -492,7 +492,7 @@ def handle_video_upload(request, slug):
 
 @login_required(login_url='login')
 # @lecturer_required
-def handle_video_single(request, slug, video_slug):
+def handle_single_video(request, slug, video_slug):
     course = get_object_or_404(Course, slug=slug)
     video = get_object_or_404(UploadVideo, slug=video_slug)
     return render(request, "upload/video_single.html", {"video": video})
@@ -500,7 +500,7 @@ def handle_video_single(request, slug, video_slug):
 
 @login_required(login_url='login')
 @lecturer_required
-def handle_video_edit(request, slug, video_slug):
+def handle_edit_video(request, slug, video_slug):
     course = Course.objects.get(slug=slug)
     instance = UploadVideo.objects.get(slug=video_slug)
     if request.method == "POST":
@@ -521,7 +521,7 @@ def handle_video_edit(request, slug, video_slug):
     )
 
 
-def handle_video_delete(request, slug, video_slug):
+def handle_delete_video(request, slug, video_slug):
     video = get_object_or_404(UploadVideo, slug=video_slug)
     # video = UploadVideo.objects.get(slug=video_slug)
     video.delete()
